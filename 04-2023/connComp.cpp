@@ -7,12 +7,12 @@ class Vertice
 {
 public:
     char *id;
-    vector<int> *vetor_conexoes;
+    Vertice *proximo;
 
-    Vertice(char id, int num_vertices)
+    Vertice(char id)
     {
         this->id = new char(id);
-        this->vetor_conexoes = new vector<int>(num_vertices, 0);
+        this->proximo = NULL;
     }
 };
 
@@ -34,7 +34,7 @@ public:
         for (int i = 0; i < num_vertices; i++)
         {
             char letra = i + 97;
-            this->vetor_vertice->at(i) = new Vertice(letra, num_vertices);
+            this->vetor_vertice->at(i) = new Vertice(letra);
         }
     }
 
@@ -56,8 +56,21 @@ public:
 
     void adicionarAdjacencia(char id_x, char id_y)
     {
-        this->vetor_vertice->at(id_x - 97)->vetor_conexoes->at(id_y - 97) = 1;
-        this->vetor_vertice->at(id_y - 97)->vetor_conexoes->at(id_x - 97) = 1;
+        Vertice *it = NULL;
+        for (it = this->vetor_vertice->at(id_x - 97); it->proximo != NULL;
+             it = it->proximo)
+        {
+        }
+
+        it->proximo = new Vertice(id_y);
+
+        Vertice *it1 = NULL;
+        for (it1 = this->vetor_vertice->at(id_y - 97); it1->proximo != NULL;
+             it1 = it1->proximo)
+        {
+        }
+
+        it1->proximo = new Vertice(id_x);
     }
 
     void algoritmo()
@@ -67,28 +80,40 @@ public:
         {
             if (this->vetor_cor->at(*(*it)->id - 97) == 'B')
             {
+                vector<int> *ordem_alpha = new vector<int>(*this->num_vertices, 0);
                 *this->num_componentes += 1;
-                cout << "\n"
-                     << *(*it)->id << ",";
-                visitar(*(*it)->id);
+
+                ordem_alpha->at(*(*it)->id - 97) = 1;
+    
+                visitar(*(*it)->id, ordem_alpha);
+
+                cout << "\n";
+
+                for (int i = 0; i < *this->num_vertices; i++)
+                {
+                    if (ordem_alpha->at(i))
+                    {
+                        char letra = i + 97;
+                        cout << letra << ",";
+                    }
+                }
+
+                delete ordem_alpha;
             }
         }
     }
 
-    void visitar(char id)
+    void visitar(char id, vector<int> *ordem_alpha)
     {
         this->vetor_cor->at(id - 97) = 'C';
 
-        for (int i = 0; i < *this->num_vertices; i++)
+        for (Vertice *it = this->vetor_vertice->at(id - 97)->proximo; it != NULL;
+             it = it->proximo)
         {
-            if (this->vetor_vertice->at(id - 97)->vetor_conexoes->at(i) == 1)
+            if (this->vetor_cor->at(*it->id - 97) == 'B')
             {
-                if (this->vetor_cor->at(i) == 'B')
-                {
-                    char letra = i + 97;
-                    cout << letra << ",";
-                    visitar(letra);
-                }
+                ordem_alpha->at(*it->id - 97) = 1;
+                visitar(*it->id, ordem_alpha);
             }
         }
 

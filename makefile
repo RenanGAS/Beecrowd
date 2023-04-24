@@ -1,5 +1,5 @@
 FOLDER = 04-2023
-FILE = connComp
+FILE = boss
 
 all:
 	rm -f ${FOLDER}/${FILE}
