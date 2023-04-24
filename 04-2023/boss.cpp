@@ -8,11 +8,13 @@ class Empregado
 {
 public:
   int *id;
+  int *idade_mais_novo;
   Empregado *proximo;
 
   Empregado(int id)
   {
     this->id = new int(id);
+    this->idade_mais_novo = new int(INT_MAX);
     this->proximo = NULL;
   }
 };
@@ -24,6 +26,8 @@ public:
   vector<int> *vetor_idade;
   vector<Empregado *> *vetor_empregado;
   vector<char> *vetor_cor;
+  int *cadeiaMudou;
+  vector<int> *correspondencias_id;
 
   DFS(int num_empregados, vector<int> idade_empregados)
   {
@@ -31,16 +35,29 @@ public:
     this->vetor_idade = new vector<int>(num_empregados, 0);
     this->vetor_empregado = new vector<Empregado *>(num_empregados, NULL);
     this->vetor_cor = new vector<char>(num_empregados, 'B');
+    this->cadeiaMudou = new int(0);
+    this->correspondencias_id = new vector<int>(num_empregados, 0);
 
     for (int i = 0; i < num_empregados; i++)
     {
       this->vetor_idade->at(i) = idade_empregados.at(i);
+      this->vetor_empregado->at(i) = new Empregado(i);
+      this->correspondencias_id->at(i) = i;
+    }
+  }
+
+  ~DFS(){
+    for (int i = 0; i < *this->num_empregados; i++)
+    {
+      delete this->vetor_empregado->at(i);
     }
 
-    for (int i = 0; i < num_empregados; i++)
-    {
-      this->vetor_empregado->at(i) = new Empregado(i);
-    }
+    delete this->num_empregados;
+    delete this->vetor_idade;
+    delete this->vetor_empregado;
+    delete this->vetor_cor;
+    delete this->cadeiaMudou;
+    delete this->correspondencias_id;
   }
 
   void mostrarVetorIdade()
@@ -82,93 +99,62 @@ public:
     it->proximo = new Empregado(id_x);
   }
 
-  void algoritmo()
+  void algoritmo(int id_alvo)
   {
-    for (auto it = this->vetor_empregado->begin();
-         it != this->vetor_empregado->end(); ++it)
+    int id_correspondente = this->correspondencias_id->at(id_alvo);
+
+    if (*this->cadeiaMudou || this->vetor_cor->at(id_correspondente) == 'B')
     {
-      if (this->vetor_cor->at(*(*it)->id) == 'B')
-      {
-        visitar(*(*it)->id);
-      }
+      int menor_idade = INT_MAX;
+      menor_idade = visitar(*this->vetor_empregado->at(id_correspondente)->id, menor_idade);
+      *this->vetor_empregado->at(id_correspondente)->idade_mais_novo = menor_idade;
     }
+
+    if (*this->vetor_empregado->at(id_correspondente)->idade_mais_novo == INT_MAX)
+    {
+      cout << "*\n";
+      return;
+    }
+
+    cout << *this->vetor_empregado->at(id_correspondente)->idade_mais_novo << "\n";
+
+    *this->cadeiaMudou = 0;
+    return;
   }
 
-  void visitar(int id)
+  int visitar(int id, int menor_idade)
   {
     this->vetor_cor->at(id) = 'C';
 
     for (Empregado *it = this->vetor_empregado->at(id)->proximo; it != NULL;
          it = it->proximo)
     {
-      if (this->vetor_cor->at(*it->id) == 'B')
+      int id_correspondente = this->correspondencias_id->at(*it->id);
+
+      int idade_proximo = this->vetor_idade->at(id_correspondente);
+
+      if (menor_idade > idade_proximo)
       {
-        visitar(*it->id);
+        menor_idade = idade_proximo;
       }
+
+      menor_idade = visitar(id_correspondente, menor_idade);
     }
 
     this->vetor_cor->at(id) = 'P';
-  }
-
-  void buscaGerenteMaisNovo(int id_alvo)
-  {
-    int idade = INT_MAX;
-    int menor_idade = 0;
-
-    menor_idade = buscaProfundidade(*this->vetor_empregado->at(id_alvo)->id, idade);
-    
-    if(menor_idade == idade){
-      cout << "*\n";
-      return;
-    }
-
-    cout << menor_idade << "\n";
-    return;
-  }
-
-  int buscaProfundidade(int id_alvo, int idade)
-  {
-    for (Empregado *it1 = this->vetor_empregado->at(id_alvo)->proximo; it1 != NULL; it1 = it1->proximo)
-    {
-      int idade_proximo = this->vetor_idade->at(*it1->id);
-
-      if (idade_proximo < idade)
-      {
-        idade = idade_proximo;
-      }
-
-      idade = buscaProfundidade(*it1->id, idade);
-    }
-
-    return idade;
+    return menor_idade;
   }
 
   void mudarCadeiaComando(int id_x, int id_y)
   {
-    for (auto it1 = this->vetor_empregado->begin();
-         it1 != this->vetor_empregado->end(); ++it1)
-    {
-      if (*(*it1)->id == id_x)
-      {
-        *(*it1)->id = id_y;
-      }
-      else if (*(*it1)->id == id_y)
-      {
-        *(*it1)->id = id_x;
-      }
+    this->correspondencias_id->at(id_x) = id_y;
+    this->correspondencias_id->at(id_y) = id_x;
 
-      for (Empregado *it2 = (*it1)->proximo; it2 != NULL; it2 = it2->proximo)
-      {
-        if (*it2->id == id_x)
-        {
-          *it2->id = id_y;
-        }
-        else if (*it2->id == id_y)
-        {
-          *it2->id = id_x;
-        }
-      }
-    }
+    this->vetor_cor->at(id_x) = 'B';
+    this->vetor_cor->at(id_y) = 'B';
+
+    *this->cadeiaMudou = 1;
+    return;
   }
 };
 
@@ -176,10 +162,9 @@ int main()
 {
   int num_empregados, num_dlinks, num_instrucoes;
 
-  while (!cin.eof())
+  while (1)
   {
     cin >> num_empregados >> num_dlinks >> num_instrucoes;
-
     vector<int> idade_empregados(num_empregados, 0);
 
     for (int i = 0; i < num_empregados; i++)
@@ -208,7 +193,7 @@ int main()
         int id;
         cin >> id;
 
-        dfs.buscaGerenteMaisNovo(id - 1);
+        dfs.algoritmo(id - 1);
       }
       else if (funcao == 'T')
       {
@@ -216,7 +201,6 @@ int main()
         cin >> id_x >> id_y;
 
         dfs.mudarCadeiaComando(id_x - 1, id_y - 1);
-        dfs.mostrarVetorEmpregado();
       }
     }
   }
