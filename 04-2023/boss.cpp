@@ -8,171 +8,110 @@
 
 using namespace std;
 
-class DFS
+void mostrarVetorIdade(vector<int> &vetor_idade)
 {
-public:
-  int *num_empregados;
-  vector<int> *vetor_idade;
-  unordered_map<int, int> *umap_id_pos;
-  map<int, pair<int, list<int> *>> *map_empregados;
+  cout << "Vetor Idade:\n\n";
 
-  DFS(int num_empregados, vector<int> &idade_empregados)
+  for (auto it = vetor_idade.begin(); it != vetor_idade.end();
+       ++it)
   {
-    this->num_empregados = new int(num_empregados);
-    this->vetor_idade = new vector<int>;
-    this->vetor_idade->reserve(num_empregados);
-    this->umap_id_pos = new unordered_map<int, int>;
-    this->map_empregados = new map<int, pair<int, list<int> *>>;
+    int pos = it - vetor_idade.begin();
+    cout << "pos: " << pos << " idade: " << *it << "\n";
+  }
+}
 
-    for (int i = 0; i < num_empregados; i++)
+void mostrarUmap(unordered_map<int, int> &umap_id_pos)
+{
+  cout << "Umap:\n\n";
+
+  for (auto it = umap_id_pos.begin(); it != umap_id_pos.end();
+       ++it)
+  {
+    cout << "id_emp: " << it->first << " pos: " << it->second << "\n";
+  }
+}
+
+void mostrarHash(map<int, pair<int, list<int>>> &map_empregados)
+{
+  cout << "Hash:\n\n";
+
+  for (auto it = map_empregados.begin(); it != map_empregados.end(); it++)
+  {
+    cout << "pos: " << it->first << " id_emp: " << it->second.first << " list: ";
+    for (auto it1 = map_empregados.at(it->first).second.begin(); it1 != map_empregados.at(it->first).second.end(); it1++)
     {
-      this->vetor_idade->push_back(idade_empregados.at(i));
-      this->umap_id_pos->emplace(i, i);
-      list<int> *lista_adj = new list<int>;
-      this->map_empregados->emplace(i, make_pair(i, lista_adj));
+      cout << *it1 << " ";
     }
+    cout << "\n";
   }
+}
 
-  ~DFS()
+void adicionarAdjacencia(map<int, pair<int, list<int>>> &map_empregados, int id_x, int id_y)
+{
+  map_empregados.at(id_y).second.push_back(id_x);
+}
+
+void algoritmo(map<int, pair<int, list<int>>> &map_empregados, unordered_map<int, int> &umap_id_pos, vector<int> &vetor_idade, int id_alvo, int num_empregados)
+{
+  int pos = umap_id_pos.at(id_alvo);
+
+  int menor_idade = 101;
+
+  stack<int> s;
+  s.push(pos);
+
+  vector<char> vector_cor(num_empregados, 'B');
+
+  while (!s.empty())
   {
-    delete this->num_empregados;
-    delete this->vetor_idade;
-    delete this->umap_id_pos;
-    delete this->map_empregados;
-  }
+    int curr_pos = s.top();
+    s.pop();
 
-  void mostrarVetorIdade()
-  {
-    cout << "Vetor Idade:\n\n";
-
-    for (auto it = this->vetor_idade->begin(); it != this->vetor_idade->end();
-         ++it)
+    for (auto it = map_empregados.at(curr_pos).second.begin(); it != map_empregados.at(curr_pos).second.end(); ++it)
     {
-      int pos = it - this->vetor_idade->begin();
-      cout << "pos: " << pos << " idade: " << *it << "\n";
-    }
-  }
-
-  void mostrarUmap()
-  {
-    cout << "Umap:\n\n";
-
-    for (auto it = this->umap_id_pos->begin(); it != this->umap_id_pos->end();
-         ++it)
-    {
-      cout << "id_emp: " << it->first << " pos: " << it->second << "\n";
-    }
-  }
-
-  void mostrarHash()
-  {
-    cout << "Hash:\n\n";
-
-    for (auto it = this->map_empregados->begin(); it != this->map_empregados->end(); it++)
-    {
-      cout << "pos: " << it->first << " id_emp: " << it->second.first << " list: ";
-      for (auto it1 = this->map_empregados->at(it->first).second->begin(); it1 != this->map_empregados->at(it->first).second->end(); it1++)
+      if (vector_cor[*it] == 'P')
       {
-        cout << *it1 << " ";
+        continue;
       }
-      cout << "\n";
-    }
-  }
 
-  void adicionarAdjacencia(int id_x, int id_y)
-  {
-    this->map_empregados->at(id_y).second->push_back(id_x);
-  }
+      vector_cor[*it] = 'P';
 
-  // void algoritmo(int id_alvo)
-  // {
-  //   int pos = this->umap_id_pos->at(id_alvo);
+      int id_correspondente = map_empregados.at(*it).first;
 
-  //   int menor_idade = INT_MAX;
+      int idade_proximo = vetor_idade.at(id_correspondente);
 
-  //   menor_idade = visitar(pos, menor_idade);
-
-  //   if (menor_idade == INT_MAX)
-  //   {
-  //     cout << "*\n";
-  //     return;
-  //   }
-
-  //   cout << menor_idade << "\n";
-  //   return;
-  // }
-
-  // int visitar(int pos, int menor_idade)
-  // {
-  //   for (auto it = this->map_empregados->at(pos).second->begin(); it != this->map_empregados->at(pos).second->end(); ++it){
-  //     int id_correspondente = this->map_empregados->at(*it).first;
-
-  //     int idade_proximo = this->vetor_idade->at(id_correspondente);
-
-  //     if (menor_idade > idade_proximo)
-  //     {
-  //       menor_idade = idade_proximo;
-  //     }
-
-  //     menor_idade = visitar(*it, menor_idade);
-  //   }
-
-  //   return menor_idade;
-  // }
-
-  void algoritmo(int id_alvo)
-  {
-    int pos = this->umap_id_pos->at(id_alvo);
-
-    int menor_idade = INT_MAX;
-
-    stack<int> s;
-    s.push(pos);
-
-    while (!s.empty())
-    {
-      int curr_pos = s.top();
-      s.pop();
-
-      for (auto it = this->map_empregados->at(curr_pos).second->begin(); it != this->map_empregados->at(curr_pos).second->end(); ++it)
+      if (menor_idade > idade_proximo)
       {
-        int id_correspondente = this->map_empregados->at(*it).first;
-
-        int idade_proximo = this->vetor_idade->at(id_correspondente);
-
-        if (menor_idade > idade_proximo)
-        {
-          menor_idade = idade_proximo;
-        }
-
-        s.push(*it);
+        menor_idade = idade_proximo;
       }
-    }
 
-    if (menor_idade == INT_MAX)
-    {
-      cout << "*\n";
-      return;
+      s.push(*it);
     }
+  }
 
-    cout << menor_idade << "\n";
+  if (menor_idade == 101)
+  {
+    cout << "*\n";
     return;
   }
 
-  void mudarCadeiaComando(int id_x, int id_y)
-  {
-    int antiga_pos_x = this->umap_id_pos->at(id_x);
-    int antiga_pos_y = this->umap_id_pos->at(id_y);
+  cout << menor_idade << "\n";
+  return;
+}
 
-    this->umap_id_pos->at(id_y) = antiga_pos_x;
-    this->umap_id_pos->at(id_x) = antiga_pos_y;
+void mudarCadeiaComando(map<int, pair<int, list<int>>> &map_empregados, unordered_map<int, int> &umap_id_pos, int id_x, int id_y)
+{
+  int antiga_pos_x = umap_id_pos.at(id_x);
+  int antiga_pos_y = umap_id_pos.at(id_y);
 
-    this->map_empregados->at(antiga_pos_x).first = id_y;
-    this->map_empregados->at(antiga_pos_y).first = id_x;
+  umap_id_pos.at(id_y) = antiga_pos_x;
+  umap_id_pos.at(id_x) = antiga_pos_y;
 
-    return;
-  }
-};
+  map_empregados.at(antiga_pos_x).first = id_y;
+  map_empregados.at(antiga_pos_y).first = id_x;
+
+  return;
+}
 
 int main()
 {
@@ -181,20 +120,24 @@ int main()
   while (cin.peek() != '\n' && cin >> num_empregados >> num_dlinks >> num_instrucoes)
   {
     vector<int> idade_empregados(num_empregados, 0);
+    unordered_map<int, int> umap_id_pos;
+    map<int, pair<int, list<int>>> map_empregados;
 
     for (int i = 0; i < num_empregados; i++)
     {
       cin >> idade_empregados.at(i);
-    }
 
-    DFS dfs = DFS(num_empregados, idade_empregados);
+      umap_id_pos.emplace(i, i);
+      list<int> lista_adj;
+      map_empregados.emplace(i, make_pair(i, lista_adj));
+    }
 
     for (int i = 0; i < num_dlinks; i++)
     {
       int id_x, id_y;
       cin >> id_x >> id_y;
 
-      dfs.adicionarAdjacencia(id_x - 1, id_y - 1);
+      adicionarAdjacencia(map_empregados, id_x - 1, id_y - 1);
     }
 
     for (int i = 0; i < num_instrucoes; i++)
@@ -208,16 +151,14 @@ int main()
         int id;
         cin >> id;
 
-        dfs.algoritmo(id - 1);
+        algoritmo(map_empregados, umap_id_pos, idade_empregados, id - 1, num_empregados);
       }
       else if (funcao == 'T')
       {
         int id_x, id_y;
         cin >> id_x >> id_y;
 
-        dfs.mudarCadeiaComando(id_x - 1, id_y - 1);
-        dfs.mostrarUmap();
-        dfs.mostrarHash();
+        mudarCadeiaComando(map_empregados, umap_id_pos, id_x - 1, id_y - 1);
       }
     }
     cin.ignore();
