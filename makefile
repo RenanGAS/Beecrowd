@@ -1,5 +1,5 @@
-FOLDER = 04-2023
-FILE = boss
+FOLDER = 05-2023
+FILE = routers
 
 all:
 	rm -f ${FOLDER}/${FILE}
