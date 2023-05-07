@@ -1,5 +1,5 @@
 FOLDER = 05-2023
-FILE = routers
+FILE = optimalNet
 
 all:
 	rm -f ${FOLDER}/${FILE}
