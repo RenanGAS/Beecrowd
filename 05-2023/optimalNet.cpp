@@ -39,39 +39,47 @@ void adicionarAdjacencia(unordered_map<int, unordered_map<int, int>> &umap_tribo
 
 void algoritmo(unordered_map<int, unordered_map<int, int>> &umap_tribo, int numero_ocas)
 {
-    unordered_map<int, pair<int , int>> umap_conexoes;
+    unordered_map<int, pair<int, int>> umap_conexoes;
     vector<char> vector_cor(numero_ocas, 'B');
     stack<int> stack_ocas;
-    stack_ocas.push(0);
-    vector_cor.at(0) = 'P';
 
-    // Talvez não tá passando por ocas que acabam ficando isoladas
-
-    while (!stack_ocas.empty())
+    for (int i = 0; i < numero_ocas; i++)
     {
-        int visitar_oca = stack_ocas.top();
-        stack_ocas.pop();
-
-        int menor_custo = INT_MAX;
-        int oca_menor_custo = 0;
-
-        for (auto it = umap_tribo.at(visitar_oca).begin(); it != umap_tribo.at(visitar_oca).end(); ++it)
+        if (vector_cor.at(i) == 'B')
         {
-            if (vector_cor.at(it->first) == 'B')
+            stack_ocas.push(i);
+            vector_cor.at(i) = 'P';
+
+            while (!stack_ocas.empty())
             {
-                if (it->second <= menor_custo)
-                {   
-                    menor_custo = it->second;
-                    oca_menor_custo = it->first;
+                int visitar_oca = stack_ocas.top();
+                cout << "oca sendo visitada: " << visitar_oca << "\n";
+                stack_ocas.pop();
+
+                int menor_custo = INT_MAX;
+                int oca_menor_custo = 0;
+
+                for (auto it = umap_tribo.at(visitar_oca).begin(); it != umap_tribo.at(visitar_oca).end(); ++it)
+                {
+                    if (vector_cor.at(it->first) == 'B')
+                    {
+                        if (it->second <= menor_custo)
+                        {
+                            menor_custo = it->second;
+                            oca_menor_custo = it->first;
+                        }
+                    }
+                }
+
+                cout << "menor custo para ir: " << menor_custo << "\n";
+
+                if (oca_menor_custo != 0)
+                {
+                    umap_conexoes.emplace(visitar_oca, make_pair(oca_menor_custo, menor_custo));
+                    stack_ocas.push(oca_menor_custo);
+                    vector_cor.at(oca_menor_custo) = 'P';
                 }
             }
-        }
-
-        if (oca_menor_custo != 0)
-        {
-            umap_conexoes.emplace(visitar_oca, make_pair(oca_menor_custo, menor_custo));
-            stack_ocas.push(oca_menor_custo);
-            vector_cor.at(oca_menor_custo) = 'P';
         }
     }
 
@@ -102,7 +110,6 @@ int main()
 
             adicionarAdjacencia(umap_tribo, oca_x - 1, oca_y - 1, custo);
         }
-        mostrarMap(umap_tribo);
         algoritmo(umap_tribo, numero_ocas);
     }
 
