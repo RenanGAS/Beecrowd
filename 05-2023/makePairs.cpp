@@ -17,16 +17,40 @@ void adicionarElemento(unordered_map<int, int> &conjuntos_disjuntos, int aluno_x
         {
             conjuntos_disjuntos.at(aluno_x) = conjuntos_disjuntos.at(aluno_y);
         }
-        else
+        else if(conjuntos_disjuntos.at(aluno_x) != -1 && conjuntos_disjuntos.at(aluno_y) == -1)
         {
             conjuntos_disjuntos.at(aluno_y) = conjuntos_disjuntos.at(aluno_x);
+        }
+        else
+        {
+            conjuntos_disjuntos.at(conjuntos_disjuntos.at(aluno_x)) = conjuntos_disjuntos.at(aluno_y);
         }
     }
 }
 
 void verificarPai(unordered_map<int, int> &conjuntos_disjuntos, int aluno_x, int aluno_y)
 {
-    if (conjuntos_disjuntos.at(aluno_x) == conjuntos_disjuntos.at(aluno_y))
+    if (conjuntos_disjuntos.at(aluno_x) == -1 || conjuntos_disjuntos.at(aluno_y) == -1)
+    {
+        cout << "N\n";
+        return;
+    }
+
+    int pai_x = aluno_x;
+
+    while (conjuntos_disjuntos.at(pai_x) != pai_x)
+    {
+        pai_x = conjuntos_disjuntos.at(pai_x);
+    }
+
+    int pai_y = aluno_y;
+
+    while (conjuntos_disjuntos.at(pai_y) != pai_y)
+    {
+        pai_y = conjuntos_disjuntos.at(pai_y);
+    }
+
+    if (pai_x == pai_y)
     {
         cout << "S\n";
     }
