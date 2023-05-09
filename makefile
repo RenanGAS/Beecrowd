@@ -1,5 +1,5 @@
 FOLDER = 05-2023
-FILE = optimalNet
+FILE = makePairs
 
 all:
 	rm -f ${FOLDER}/${FILE}
