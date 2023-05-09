@@ -96,12 +96,14 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
         soma += *it;
     }
 
-    cout << soma;
+    cout << soma << "\n";
     // mostrarVetorCustos(custos_minimos);
 }
 
 int main()
 {
+    // Ver se o problema tá quando empata os valores dos caminhos, temos que olhar pra frente e ver o melhor como no djisktra
+    
     ifstream infile;
     infile.open("05-2023/routers.txt");
 
