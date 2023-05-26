@@ -24,9 +24,11 @@ void mostrarMap(unordered_map<int, unordered_map<int, int>> &map_roteadores)
 
 void mostrarVetorCustos(vector<int> &custos_minimos)
 {
+    cout << "\n";
     for (auto it = custos_minimos.begin(); it != custos_minimos.end(); it++)
     {
-        cout << "custo: " << *it << "\n";
+        int pos = it - custos_minimos.begin();
+        cout << "no: " << pos + 1 << " custo: " << *it << "\n";
     }
 }
 
@@ -43,19 +45,22 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
 
     vector<char> vetor_cor(num_roteadores, 'B');
 
-    stack<int> arvore;
-    arvore.push(0);
+    stack<int> pilha;
+    pilha.push(0);
     vetor_cor.at(0) = 'P';
 
-    while (!arvore.empty())
+    while (!pilha.empty())
     {
-        int rot_pilha = arvore.top();
-        arvore.pop();
+        int rot_pilha = pilha.top();
+        pilha.pop();
 
+        cout << "Estamos em: " << rot_pilha << "\n";
+        
         for (auto it = map_roteadores.at(rot_pilha).begin(); it != map_roteadores.at(rot_pilha).end(); ++it)
         {
             if (vetor_cor.at(it->first) == 'B')
             {
+                cout << "Passando por: " << it->first + 1 << "\n";
                 if (custos_minimos.at(it->first) > it->second)
                 {
                     custos_minimos.at(it->first) = it->second;
@@ -64,27 +69,28 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
         }
 
         int menor = INT_MAX;
-        int proximo_rot = 0;
+        int proximo_rot = -1;
 
-        for (auto it = map_roteadores.at(rot_pilha).begin(); it != map_roteadores.at(rot_pilha).end(); ++it)
+        for (auto it = custos_minimos.begin(); it != custos_minimos.end(); ++it)
         {
-            if (vetor_cor.at(it->first) == 'B')
+            int pos = it - custos_minimos.begin();
+
+            if (vetor_cor.at(pos) == 'B')
             {
-                if (it->second < menor)
+                if (*it < menor)
                 {
-                    menor = it->second;
-                    proximo_rot = it->first;
+                    menor = *it;
+                    proximo_rot = pos;
                 }
             }
         }
 
-        // cout << "router: " << rot_pilha;
+        mostrarVetorCustos(custos_minimos);
 
-        // mostrarVetorCustos(custos_minimos);
-
-        if (proximo_rot != 0)
+        if (proximo_rot != -1)
         {
-            arvore.push(proximo_rot);
+            cout << "Vai para: " << proximo_rot + 1 << "\n";
+            pilha.push(proximo_rot);
             vetor_cor.at(proximo_rot) = 'P';
         }
     }
@@ -127,7 +133,7 @@ int main()
             adicionarAdjacencia(map_roteadores, rot_x - 1, rot_y - 1, custo);
         }
 
-        // mostrarMap(map_roteadores);
+        mostrarMap(map_roteadores);
 
         algoritmo(map_roteadores, num_roteadores); // prim
     }
