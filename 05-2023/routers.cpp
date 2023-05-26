@@ -45,53 +45,57 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
 
     vector<char> vetor_cor(num_roteadores, 'B');
 
-    stack<int> pilha;
-    pilha.push(0);
-    vetor_cor.at(0) = 'P';
-
-    while (!pilha.empty())
+    for (int i = 0; i < num_roteadores; i++)
     {
-        int rot_pilha = pilha.top();
-        pilha.pop();
-
-        cout << "Estamos em: " << rot_pilha << "\n";
-        
-        for (auto it = map_roteadores.at(rot_pilha).begin(); it != map_roteadores.at(rot_pilha).end(); ++it)
+        if (vetor_cor.at(i) == 'B')
         {
-            if (vetor_cor.at(it->first) == 'B')
+            stack<int> pilha;
+            pilha.push(i);
+            vetor_cor.at(i) = 'P';
+
+            while (!pilha.empty())
             {
-                cout << "Passando por: " << it->first + 1 << "\n";
-                if (custos_minimos.at(it->first) > it->second)
+                int rot_pilha = pilha.top();
+                pilha.pop();
+
+                cout << "Estamos em: " << rot_pilha + 1 << "\n";
+
+                for (auto it = map_roteadores.at(rot_pilha).begin(); it != map_roteadores.at(rot_pilha).end(); ++it)
                 {
-                    custos_minimos.at(it->first) = it->second;
+                    if (vetor_cor.at(it->first) == 'B')
+                    {
+                        cout << "Passando por: " << it->first + 1 << "\n";
+                        if (custos_minimos.at(it->first) > it->second)
+                        {
+                            custos_minimos.at(it->first) = it->second;
+                        }
+                    }
+                }
+
+                int menor = INT_MAX;
+                int proximo_rot = -1;
+
+                for (auto it = map_roteadores.at(rot_pilha).begin(); it != map_roteadores.at(rot_pilha).end(); ++it)
+                {
+                    if (vetor_cor.at(it->first) == 'B')
+                    {
+                        if (it->second < menor)
+                        {
+                            menor = it->second;
+                            proximo_rot = it->first;
+                        }
+                    }
+                }
+
+                mostrarVetorCustos(custos_minimos);
+
+                if (proximo_rot != -1)
+                {
+                    cout << "Vai para: " << proximo_rot + 1 << "\n";
+                    pilha.push(proximo_rot);
+                    vetor_cor.at(proximo_rot) = 'P';
                 }
             }
-        }
-
-        int menor = INT_MAX;
-        int proximo_rot = -1;
-
-        for (auto it = custos_minimos.begin(); it != custos_minimos.end(); ++it)
-        {
-            int pos = it - custos_minimos.begin();
-
-            if (vetor_cor.at(pos) == 'B')
-            {
-                if (*it < menor)
-                {
-                    menor = *it;
-                    proximo_rot = pos;
-                }
-            }
-        }
-
-        mostrarVetorCustos(custos_minimos);
-
-        if (proximo_rot != -1)
-        {
-            cout << "Vai para: " << proximo_rot + 1 << "\n";
-            pilha.push(proximo_rot);
-            vetor_cor.at(proximo_rot) = 'P';
         }
     }
 
@@ -109,7 +113,7 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
 int main()
 {
     // Ver se o problema tá quando empata os valores dos caminhos, temos que olhar pra frente e ver o melhor como no djisktra
-    
+
     ifstream infile;
     infile.open("05-2023/routers.txt");
 
