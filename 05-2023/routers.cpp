@@ -75,14 +75,15 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
                 int menor = INT_MAX;
                 int proximo_rot = -1;
 
-                for (auto it = map_roteadores.at(rot_pilha).begin(); it != map_roteadores.at(rot_pilha).end(); ++it)
+                for (auto it = custos_minimos.begin(); it != custos_minimos.end(); ++it)
                 {
-                    if (vetor_cor.at(it->first) == 'B')
+                    int pos = it - custos_minimos.begin();
+                    if (vetor_cor.at(pos) == 'B')
                     {
-                        if (it->second < menor)
+                        if (*it < menor)
                         {
-                            menor = it->second;
-                            proximo_rot = it->first;
+                            menor = *it;
+                            proximo_rot = pos;
                         }
                     }
                 }
@@ -93,8 +94,9 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &map_roteadores, int 
                 {
                     cout << "Vai para: " << proximo_rot + 1 << "\n";
                     pilha.push(proximo_rot);
-                    vetor_cor.at(proximo_rot) = 'P';
                 }
+
+                vetor_cor.at(rot_pilha) = 'P';
             }
         }
     }
