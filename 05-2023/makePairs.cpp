@@ -17,13 +17,21 @@ void adicionarElemento(unordered_map<int, int> &conjuntos_disjuntos, int aluno_x
         {
             conjuntos_disjuntos.at(aluno_x) = conjuntos_disjuntos.at(aluno_y);
         }
-        else if(conjuntos_disjuntos.at(aluno_x) != -1 && conjuntos_disjuntos.at(aluno_y) == -1)
+        else if (conjuntos_disjuntos.at(aluno_x) != -1 && conjuntos_disjuntos.at(aluno_y) == -1)
         {
             conjuntos_disjuntos.at(aluno_y) = conjuntos_disjuntos.at(aluno_x);
         }
         else
         {
-            conjuntos_disjuntos.at(conjuntos_disjuntos.at(aluno_x)) = conjuntos_disjuntos.at(aluno_y);
+            int prox_pai_y = conjuntos_disjuntos.at(aluno_y);
+
+            while (prox_pai_y != conjuntos_disjuntos.at(prox_pai_y))
+            {
+                prox_pai_y = conjuntos_disjuntos.at(prox_pai_y);
+                conjuntos_disjuntos.at(prox_pai_y) = conjuntos_disjuntos.at(aluno_x);
+            }
+
+            conjuntos_disjuntos.at(aluno_y) = conjuntos_disjuntos.at(aluno_x);
         }
     }
 }
@@ -36,21 +44,21 @@ void verificarPai(unordered_map<int, int> &conjuntos_disjuntos, int aluno_x, int
         return;
     }
 
-    int pai_x = aluno_x;
+    // int pai_x = aluno_x;
 
-    while (conjuntos_disjuntos.at(pai_x) != pai_x)
-    {
-        pai_x = conjuntos_disjuntos.at(pai_x);
-    }
+    // while (conjuntos_disjuntos.at(pai_x) != pai_x)
+    // {
+    //     pai_x = conjuntos_disjuntos.at(pai_x);
+    // }
 
-    int pai_y = aluno_y;
+    // int pai_y = aluno_y;
 
-    while (conjuntos_disjuntos.at(pai_y) != pai_y)
-    {
-        pai_y = conjuntos_disjuntos.at(pai_y);
-    }
+    // while (conjuntos_disjuntos.at(pai_y) != pai_y)
+    // {
+    //     pai_y = conjuntos_disjuntos.at(pai_y);
+    // }
 
-    if (pai_x == pai_y)
+    if (conjuntos_disjuntos.at(aluno_x) == conjuntos_disjuntos.at(aluno_y))
     {
         cout << "S\n";
     }
@@ -69,6 +77,7 @@ int main()
 
     while (infile >> numero_alunos >> numero_amizades_diretas >> numero_pares)
     {
+        cout << "\n";
         unordered_map<int, int> conjuntos_disjuntos;
 
         for (int i = 0; i < numero_alunos; i++)
