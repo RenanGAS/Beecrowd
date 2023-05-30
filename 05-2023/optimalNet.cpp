@@ -28,15 +28,26 @@ void mostrarVetorCustosMinimos(vector<int> &custos_minimos)
     {
         int pos = it - custos_minimos.begin();
 
-        cout << "pos: " << pos << " custo: " << *it << "\n";
+        cout << "no: " << pos << " custo: " << *it << "\n";
+    }
+}
+
+void mostrarVetorLigacoesMinimas(vector<int> &ligacoes_minimas)
+{
+    for (auto it = ligacoes_minimas.begin(); it != ligacoes_minimas.end(); ++it)
+    {
+        int pos = it - ligacoes_minimas.begin();
+
+        cout << "no1: " << pos << " no2: " << *it << "\n";
     }
 }
 
 void algoritmo(unordered_map<int, unordered_map<int, int>> &umap_tribo, int numero_ocas)
 {
     vector<int> custos_minimos(numero_ocas, INT_MAX);
-
     custos_minimos.at(0) = 0;
+
+    vector<int> ligacoes_minimas(numero_ocas, 0);
 
     vector<char> vector_cor(numero_ocas, 'B');
 
@@ -59,6 +70,7 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &umap_tribo, int nume
                     {
                         if (custos_minimos[it->first] > it->second)
                         {
+                            ligacoes_minimas[it->first] = visitar_oca;
                             custos_minimos[it->first] = it->second;
                         }
                     }
@@ -91,18 +103,22 @@ void algoritmo(unordered_map<int, unordered_map<int, int>> &umap_tribo, int nume
         }
     }
 
-    mostrarVetorCustosMinimos(custos_minimos);
+    // mostrarVetorCustosMinimos(custos_minimos);
 
-    for (int i = numero_ocas - 1; i >= 0; i--)
+    // mostrarVetorLigacoesMinimas(ligacoes_minimas);
+
+    for (int i = 1; i < numero_ocas; i++)
     {
-        for (auto it = umap_tribo.at(i).begin(); it != umap_tribo.at(i).end(); ++it)
+        if (ligacoes_minimas[i] < i)
         {
-            if (custos_minimos[it->first] == it->second && i < it->first)
-            {
-                printf("\n%d, %d\n", i + 1, it->first + 1);
-            }
+            printf("%d %d\n", ligacoes_minimas[i], i);
+        }
+        else
+        {
+            printf("%d %d\n", i, ligacoes_minimas[i]);
         }
     }
+    printf("\n");
 }
 
 int main()
@@ -112,12 +128,18 @@ int main()
 
     int numero_ocas, numero_conexoes;
 
+    int num_teste = 0;
+
     while (infile >> numero_ocas >> numero_conexoes)
     {
         if (numero_ocas == 0)
         {
             break;
         }
+
+        num_teste++;
+
+        printf("Teste %d\n\n", num_teste);
 
         unordered_map<int, unordered_map<int, int>> umap_tribo;
 
@@ -138,7 +160,7 @@ int main()
 
         algoritmo(umap_tribo, numero_ocas);
 
-        mostrarMap(umap_tribo);
+        // mostrarMap(umap_tribo);
     }
 
     return 0;
