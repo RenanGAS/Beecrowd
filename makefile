@@ -1,5 +1,5 @@
 FOLDER = 06-2023
-FILE = meeting
+FILE = tripProg
 
 all:
 	rm -f ${FOLDER}/${FILE}
