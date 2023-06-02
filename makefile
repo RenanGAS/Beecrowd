@@ -1,5 +1,5 @@
-FOLDER = 05-2023
-FILE = optimalNet
+FOLDER = 06-2023
+FILE = meeting
 
 all:
 	rm -f ${FOLDER}/${FILE}
