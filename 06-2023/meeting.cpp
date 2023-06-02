@@ -7,8 +7,6 @@
 
 using namespace std;
 
-int num_elem;
-// map<int, list<pair<int, int>> *> map_;
 map<int, list<pair<int, int>>> map_;
 
 void mostrarGrafo()
@@ -68,48 +66,54 @@ int extrai_min(list<int> &lista_v, vector<int> &vetor_w)
 
 void dijkstra(int num_v)
 {
-    list<int> lista_v;
-    vector<int> vetor_w;
+    int min_r = INT_MAX;
 
     for (int i = 0; i < num_v; i++)
     {
-        vetor_w.push_back(INT_MAX);
-        lista_v.push_back(i);
-    }
+        list<int> lista_v;
+        vector<int> vetor_w;
 
-    vetor_w[0] = 0;
-
-    while (!lista_v.empty())
-    {
-        int prox_v = extrai_min(lista_v, vetor_w);
-
-        printf("prox_v = %d\n", prox_v);
-
-        for (auto it = map_.at(prox_v).cbegin(); it != map_.at(prox_v).cend(); ++it)
+        for (int k = 0; k < num_v; k++)
         {
-            if (vetor_w[it->first] > vetor_w[prox_v] + it->second)
+            vetor_w.push_back(INT_MAX);
+            lista_v.push_back(k);
+        }
+
+        vetor_w[i] = 0;
+
+        while (!lista_v.empty())
+        {
+            int prox_v = extrai_min(lista_v, vetor_w);
+
+            for (auto it = map_.at(prox_v).cbegin(); it != map_.at(prox_v).cend(); ++it)
             {
-                printf("Relaxamento:\n");
-                printf("%d > %d\n", vetor_w[it->first], vetor_w[prox_v] + it->second);
-                
-                vetor_w[it->first] = vetor_w[prox_v] + it->second;
+                if (vetor_w[it->first] > vetor_w[prox_v] + it->second)
+                {
+                    vetor_w[it->first] = vetor_w[prox_v] + it->second;
+                }
             }
         }
 
-        mostrarPesos(vetor_w);
-    }
+        int max_w = 0;
 
-    int max_w = 0;
-
-    for (int i = 1; i < num_v; i++)
-    {
-        if (max_w < vetor_w[i])
+        for (int j = 0; j < num_v; j++)
         {
-            max_w = vetor_w[i];
+            if (j != i)
+            {
+                if (max_w < vetor_w[j])
+                {
+                    max_w = vetor_w[j];
+                }
+            }
+        }
+
+        if (min_r > max_w)
+        {
+            min_r = max_w;
         }
     }
 
-    printf("\n%d\n", max_w);
+    printf("%d\n", min_r);
 }
 
 int main()
@@ -119,21 +123,8 @@ int main()
 
     int num_v, num_e;
 
-    num_elem = 0;
-
     while (infile >> num_v >> num_e)
     {
-        // if (num_v > num_elem && !num_elem)
-        // {
-        //     for (int i = num_elem; i < num_v; i++)
-        //     {
-        //         list<pair<int, int>> *list_adj = (list<pair<int, int>> *)malloc(sizeof(list<pair<int, int>> *));
-        //         map_.emplace(i, list_adj);
-        //     }
-
-        //     num_elem = num_v;
-        // }
-
         for (int i = 0; i < num_v; i++)
         {
             list<pair<int, int>> list_adj;
@@ -149,14 +140,7 @@ int main()
             addAdj(e1, e2, w);
         }
 
-        mostrarGrafo();
-
         dijkstra(num_v);
-
-        // for (int i = 0; i < num_v; i++)
-        // {
-        //     free(&map_.at(i));
-        // }
     }
 
     return EXIT_SUCCESS;
