@@ -1,5 +1,5 @@
 FOLDER = 06-2023
-FILE = tripProg
+FILE = ASP
 
 all:
 	rm -f ${FOLDER}/${FILE}
