@@ -4,7 +4,7 @@ FILE = ASP
 all:
 	rm -f ${FOLDER}/${FILE}
 	g++ ${FOLDER}/${FILE}.cpp -o ${FOLDER}/${FILE}
-	${FOLDER}/${FILE}
+	${FOLDER}/${FILE} > ${FOLDER}/a.out
 
 debug:
 	rm -f ${FOLDER}/${FILE}
