@@ -91,11 +91,11 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
     vector<int> vetor_w;
     vector<int> vetor_p;
 
-    for (int k = 0; k < num_v; k++)
+    for (int i = 0; i < num_v; i++)
     {
         vetor_w.push_back(INT_MAX);
-        lista_v.push_back(k);
-        vetor_p.push_back(k);
+        lista_v.push_back(i);
+        vetor_p.push_back(i);
     }
 
     vetor_w[src] = 0;
@@ -103,6 +103,12 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
     while (!lista_v.empty())
     {
         int prox_v = extrai_min(lista_v, vetor_w);
+
+        if (prox_v == -1)
+        {
+            printf("%d\n", -1);
+            return;
+        }
 
         for (auto it = map_.at(prox_v).cbegin(); it != map_.at(prox_v).cend(); ++it)
         {
@@ -116,45 +122,47 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
 
     map<int, list<pair<int, int>>> map_inv_;
 
-    for (int i = 0; i < num_v; i++)
+    for (int j = 0; j < num_v; j++)
     {
         list<pair<int, int>> list_adj;
-        map_inv_.emplace(i, list_adj);
+        map_inv_.emplace(j, list_adj);
     }
 
-    for (auto it = map_.cbegin(); it != map_.cend(); ++it)
+    for (auto it1 = map_.cbegin(); it1 != map_.cend(); ++it1)
     {
-        for (auto it1 = it->second.cbegin(); it1 != it->second.cend(); ++it1)
+        for (auto it2 = it1->second.cbegin(); it2 != it1->second.cend(); ++it2)
         {
-            map_inv_.at(it1->first).push_back(make_pair(it->first, it1->second));
+            map_inv_.at(it2->first).push_back(make_pair(it1->first, it2->second));
         }
     }
 
     //mostrarGrafoInv(map_inv_);
 
-    for (auto it = map_inv_.at(dest).begin(); it != map_inv_.at(dest).end(); ++it)
+    for (auto it3 = map_inv_.at(dest).begin(); it3 != map_inv_.at(dest).end(); ++it3)
     {
-        //printf("\npassando por: %d", it->first);
+        //printf("\npassando por: %d", it3->first);
 
-        if (vetor_w[it->first] + it->second == vetor_w[dest])
+        if (vetor_w[it3->first] + it3->second == vetor_w[dest])
         {
-            //printf("\nno: %d", it->first);
+            //printf("\nno: %d", it3->first);
 
-            int v = it->first;
+            int v = it3->first;
 
-            //printf("\nremovendo: %d ---%d--- %d", dest, it->second, it->first);
-            it = map_inv_.at(dest).erase(it);
+            //printf("\nremovendo: %d ---%d--- %d", dest, it3->second, it3->first);
+            it3 = map_inv_.at(dest).erase(it3);
+            it3--;
 
             while (vetor_w[v] != 0)
             {
                 int v_ant = vetor_p[v];
 
-                for (auto it1 = map_inv_.at(v).begin(); it1 != map_inv_.at(v).end(); ++it1)
+                for (auto it4 = map_inv_.at(v).begin(); it4 != map_inv_.at(v).end(); ++it4)
                 {
-                    if (it1->first == v_ant)
+                    if (it4->first == v_ant)
                     {
-                        //printf("\nremovendo: %d ---%d--- %d", v, it1->second, it1->first);
-                        it1 = map_inv_.at(v).erase(it1);
+                        //printf("\nremovendo: %d ---%d--- %d", v, it4->second, it4->first);
+                        it4 = map_inv_.at(v).erase(it4);
+                        it4--;
                     }
                 }
 
@@ -189,8 +197,6 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
         {
             break;
         }
-
-        //printf("\nprox_v: %d", prox_v);
 
         for (auto it = map_inv_.at(prox_v).cbegin(); it != map_inv_.at(prox_v).cend(); ++it)
         {
