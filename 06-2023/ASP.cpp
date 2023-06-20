@@ -5,6 +5,8 @@
 #include <list>
 #include <vector>
 
+#define MAX 3000
+
 using namespace std;
 
 void mostrarGrafo(map<int, list<pair<int, int>>> &map_)
@@ -65,9 +67,9 @@ void addAdj(map<int, list<pair<int, int>>> &map_, int e1, int e2, int w)
 int extrai_min(list<int> &lista_v, vector<int> &vetor_w)
 {
     int v_min = 0;
-    int w_min = INT_MAX;
+    int w_min = MAX;
 
-    for (auto it = lista_v.cbegin(); it != lista_v.cend(); ++it)
+    for (auto it = lista_v.begin(); it != lista_v.end(); ++it)
     {
         if (w_min > vetor_w[*it])
         {
@@ -76,7 +78,9 @@ int extrai_min(list<int> &lista_v, vector<int> &vetor_w)
         }
     }
 
-    if (w_min == INT_MAX)
+    //printf("\nvetor_w[*it]: %d it: %d", w_min, v_min);
+
+    if (w_min == MAX)
     {
         return -1;
     }
@@ -93,7 +97,7 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
 
     for (int i = 0; i < num_v; i++)
     {
-        vetor_w.push_back(INT_MAX);
+        vetor_w.push_back(MAX);
         lista_v.push_back(i);
         vetor_p.push_back(i);
     }
@@ -106,8 +110,11 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
 
         if (prox_v == -1)
         {
-            printf("%d\n", -1);
-            return;
+            // printf("%d\n", -1);
+            // //mostrarPesos(vetor_w);
+            // return;
+
+            break;
         }
 
         for (auto it = map_.at(prox_v).cbegin(); it != map_.at(prox_v).cend(); ++it)
@@ -158,7 +165,7 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
 
                 for (auto it4 = map_inv_.at(v).begin(); it4 != map_inv_.at(v).end(); ++it4)
                 {
-                    if (it4->first == v_ant)
+                    if (it4->first == v_ant && (vetor_w[v] - it4->second == vetor_w[it4->first]))
                     {
                         //printf("\nremovendo: %d ---%d--- %d", v, it4->second, it4->first);
                         it4 = map_inv_.at(v).erase(it4);
@@ -183,7 +190,7 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
 
     for (int k = 0; k < num_v; k++)
     {
-        vetor_w_inv.push_back(INT_MAX);
+        vetor_w_inv.push_back(MAX);
         lista_v_inv.push_back(k);
     }
 
@@ -208,9 +215,11 @@ void dijkstra(map<int, list<pair<int, int>>> &map_, int num_v, int src, int dest
         }
     }
 
-    if (vetor_w_inv[src] == INT_MAX)
+    if (vetor_w_inv[src] == MAX)
     {
         printf("%d\n", -1);
+
+        //mostrarPesos(vetor_w_inv);
     }
     else
     {
